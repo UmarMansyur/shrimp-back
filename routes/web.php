@@ -24,10 +24,22 @@ $router->group(['prefix' => 'api'], function($router) {
     $router->get('user-profile', 'AuthController@me');
    
     $router->group(['prefix' => 'user'], function($router) {
-        $router->get('/', 'UserController@create');
-        $router->post('create', 'UserController@register');
+        $router->get('/', 'UserController@show');
+        $router->post('create', 'UserController@create');
         $router->put('update/{id}', 'UserController@update');
         $router->delete('delete/{id}', 'UserController@destroy');
+    });
+    $router->group(['prefix' => 'pond'], function($router) {
+        $router->get('/', 'PondController@show');
+        $router->post('create', 'PondController@create');
+        $router->put('update/{id}', 'PondController@update');
+        $router->delete('delete/{id}', 'PondController@destroy');
+    });
+    $router->group(['prefix' => 'anco-type'], function($router) {
+        $router->get('/', 'AncoController@show');
+        $router->post('create', 'AncoController@create');
+        $router->put('update/{id}', 'AncoController@update');
+        $router->delete('delete/{id}', 'AncoController@destroy');
     });
 
 });

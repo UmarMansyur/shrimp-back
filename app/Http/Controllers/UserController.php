@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\UserDetail;
 
 class UserController extends Controller
 {
@@ -34,16 +35,19 @@ class UserController extends Controller
                     'role.required' => 'Role is required',
                 ]
             );
-            User::create([
+            $user = User::create([
                 'name'      => $request->name,
                 'email'     => $request->email,
                 'password'  => Hash::make($request->password),
                 'role'      => 'user'
             ]);
+            UserDetail::create([
+                'user_id' => $user->id
+            ]);
             return response()->json([
                 'status' => true,
                 'message' => 'Registered successfully'
-            ], 2001);
+            ], 201);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -74,11 +78,11 @@ class UserController extends Controller
         }
     }
 
-    public function update(Request $request, $id) 
+    public function update(Request $request, $id)
     {
         try {
             $user = User::find($id);
-            if(!$user) {
+            if (!$user) {
                 return response()->json([
                     'status' => false,
                     'message' => 'User Not Found',
@@ -105,9 +109,16 @@ class UserController extends Controller
         }
     }
 
-    public function destroy($id) {
+    public function destroy($id)
+    {
         try {
             $user = User::find($id);
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User Not Found'
+                ], 404);
+            }
             $user->delete();
             return response()->json([
                 'status' => true,

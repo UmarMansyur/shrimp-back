@@ -20,7 +20,7 @@ class AuthController extends Controller
                 $request,
                 [
                     'email' => 'required|string',
-                    'password' => 'required:string'
+                    'password' => 'required|string'
                 ]
             );
 
