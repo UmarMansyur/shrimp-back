@@ -41,5 +41,29 @@ $router->group(['prefix' => 'api'], function($router) {
         $router->put('update/{id}', 'AncoController@update');
         $router->delete('delete/{id}', 'AncoController@destroy');
     });
+    $router->group(['prefix' => 'anco'], function($router) {
+        $router->get('/', 'AncoController@show');
+        $router->post('create', 'AncoController@create');
+        $router->put('update/{id}', 'AncoController@update');
+        $router->delete('delete/{id}', 'AncoController@destroy');
+    });
+    $router->group(['prefix' => 'kimia'], function ($router) {
+        $router->get('/', 'KimiaController@show');
+        $router->post('create', 'KimiaController@create');
+        $router->put('update/{id}', 'KimiaController@update');
+        $router->delete('delete/{id}', 'KimiaController@destroy');
+    });
+    $router->group(['prefix' => 'pakan'], function ($router) {
+        $router->get('/', 'PakanController@show');
+        $router->post('create', 'PakanController@create');
+        $router->put('update/{id}', 'PakanController@update');
+        $router->delete('delete/{id}', 'PakanController@destroy');
+    });
+    $router->group(['prefix' => 'air'], function ($router) {
+        $router->get('/', 'AirController@show');
+        $router->post('create', 'AirController@create');
+        $router->put('update/{id}', 'AirController@update');
+        $router->delete('delete/{id}', 'AirController@destroy');
+    });
 
 });
