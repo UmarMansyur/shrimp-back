@@ -20,7 +20,7 @@ $router->get('/', function () use ($router) {
 $router->group(['prefix' => 'api'], function($router) {
     $router->post('login', 'AuthController@login');
     $router->post('logout', 'AuthController@logout');
-    $router->patch('refresh', 'AuthController@refresh');
+    $router->post('refresh', 'AuthController@refresh');
     $router->get('user-profile', 'AuthController@me');
    
     $router->group(['prefix' => 'user'], function($router) {
@@ -31,12 +31,14 @@ $router->group(['prefix' => 'api'], function($router) {
     });
     $router->group(['prefix' => 'pond'], function($router) {
         $router->get('/', 'PondController@show');
+        $router->get('show/{id}', 'PondController@showById');
         $router->post('create', 'PondController@create');
         $router->put('update/{id}', 'PondController@update');
         $router->delete('delete/{id}', 'PondController@destroy');
     });
     $router->group(['prefix' => 'anco-type'], function($router) {
         $router->get('/', 'AncoController@show');
+        $router->get('show/{id}', 'AncoController@showById');
         $router->post('create', 'AncoController@create');
         $router->put('update/{id}', 'AncoController@update');
         $router->delete('delete/{id}', 'AncoController@destroy');

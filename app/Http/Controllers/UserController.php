@@ -78,6 +78,28 @@ class UserController extends Controller
         }
     }
 
+    public function showById($id) {
+        try {
+            $exist = User::find($id);
+            if (!$exist) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Anco Not Found'
+                ], 404);
+            }
+            return response()->json([
+                'status' => true,
+                'message' => 'Data retrived successfully',
+                'data' => $exist
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
     public function update(Request $request, $id)
     {
         try {

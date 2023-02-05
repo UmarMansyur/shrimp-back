@@ -18,7 +18,7 @@ class PondController extends Controller
 
             $this->validate($request, [
                 'name'       => 'required|string|unique:ponds',
-                'wide'       => 'required|numeric|min:1|max:99999',
+                'wide'       => 'required|numeric|min:1|max:9999999',
                 'stock_date' => 'required|date'
             ]);
 
@@ -47,10 +47,33 @@ class PondController extends Controller
                 ], 404);
             }
             return response()->json([
-                'status' => false,
-                'message' => 'Pond Not Found',
+                'status' => true,
+                'message' => 'Data retrived successfully',
                 'data' => $exist
-            ], 404);
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function showById($id)
+    {
+        try {
+            $exist = Pond::find($id);
+            if (!$exist) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Pond Not Found'
+                ], 404);
+            }
+            return response()->json([
+                'status' => true,
+                'message' => 'Data retrived successfully',
+                'data' => $exist
+            ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,

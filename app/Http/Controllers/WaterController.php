@@ -28,6 +28,28 @@ class WaterController extends Controller
         }
     }
 
+    public function showById($id) {
+        try {
+            $exist = Water::find($id);
+            if (!$exist) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Anco Not Found'
+                ], 404);
+            }
+            return response()->json([
+                'status' => true,
+                'message' => 'Data retrived successfully',
+                'data' => $exist
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
     public function show()
     {
         try {
@@ -39,10 +61,10 @@ class WaterController extends Controller
                 ], 404);
             }
             return response()->json([
-                'status' => false,
-                'message' => 'Data Not Found',
+                'status' => true,
+                'message' => 'Data retrived successfully',
                 'data' => $exist
-            ], 404);
+            ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
