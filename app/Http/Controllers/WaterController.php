@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Water;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class WaterController extends Controller
 {
@@ -28,9 +29,10 @@ class WaterController extends Controller
         }
     }
 
-    public function showById($id) {
+    public function showById($id)
+    {
         try {
-            $exist = Water::find($id);
+            $exist = DB::select("SELECT water_qualities.*, ponds.name as pond_name FROM water_qualities INNER JOIN ponds ON water_qualities.pond_id = ponds.id WHERE water_qualities.id = $id");
             if (!$exist) {
                 return response()->json([
                     'status' => false,
@@ -50,21 +52,44 @@ class WaterController extends Controller
         }
     }
 
-    public function show()
+    public function showToday()
     {
+        $limit = request('limit') ?? 10;
+        $page = request('page') ?? 1;
         try {
-            $exist = Water::all();
-            if (!$exist) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Data Not Found'
-                ], 404);
-            }
+            $offset = ($page - 1) / $limit;
+            $exist = DB::select("SELECT water_qualities.*, ponds.name as pond_name FROM water_qualities INNER JOIN ponds ON water_qualities.pond_id = ponds.id WHERE DATE(water_qualities.created_at) = CURDATE() LIMIT $limit OFFSET $offset");
             return response()->json([
                 'status' => true,
                 'message' => 'Data retrived successfully',
                 'data' => $exist
             ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function show()
+    {
+        try {
+            $limit = request('limit') ?? 10;
+            $page = request('page') ?? 1;
+            $offset = ($page - 1) / $limit;
+            $exist = DB::select("SELECT water_qualities.*, ponds.name as pond_name FROM water_qualities INNER JOIN ponds ON water_qualities.pond_id = ponds.id LIMIT $limit OFFSET $offset");
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Retrived Successfully',
+                'data' => [
+                    'current_page' => $page,
+                    'total_pages' => ceil(Water::count() / $limit),
+                    'total_datas' => Water::count(),
+                    'limit' => $limit,
+                    'data' => $exist
+                ]
+            ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,

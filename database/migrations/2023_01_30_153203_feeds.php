@@ -18,6 +18,7 @@ return new class extends Migration
             $table->bigInteger('pond_id')->unsigned();
             $table->foreign('pond_id')->references('id')->on('ponds')->onDelete('cascade');
             $table->double('amount')->nullable();
+            $table->double('accumulative')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();
         } );

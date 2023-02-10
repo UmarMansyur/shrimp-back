@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Kimia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class KimiaController extends Controller
 {
@@ -28,9 +29,10 @@ class KimiaController extends Controller
         }
     }
 
-    public function showById($id) {
+    public function showById($id)
+    {
         try {
-            $exist = Kimia::find($id);
+            $exist = DB::select("SELECT kimias.*, ponds.name as pond_name FROM kimias INNER JOIN ponds ON kimias.pond_id = ponds.id WHERE kimias.id = $id");
             if (!$exist) {
                 return response()->json([
                     'status' => false,
@@ -50,21 +52,43 @@ class KimiaController extends Controller
         }
     }
 
-    public function show()
+    public function showToday()
     {
         try {
-            $exist = Kimia::all();
-            if (!$exist) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Data Not Found'
-                ], 404);
-            }
+            $limit = request('limit') ?? 10;
+            $page = request('page') ?? 1;
+            $offset = ($page - 1) / $limit;
+            $exist = DB::select("SELECT kimias.*, ponds.name as pond_name FROM kimias INNER JOIN ponds ON kimias.pond_id = ponds.id WHERE DATE(kimias.created_at) = CURDATE() LIMIT $limit OFFSET $offset");
             return response()->json([
                 'status' => true,
                 'message' => 'Data retrived successfully',
                 'data' => $exist
             ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+    public function show()
+    {
+        try {
+            $limit = request('limit') ?? 10;
+            $page = request('page') ?? 1;
+            $offset = ($page - 1) / $limit;
+            $exist = DB::select("SELECT kimias.*, ponds.name as pond_name FROM kimias INNER JOIN ponds ON kimias.pond_id = ponds.id LIMIT $limit OFFSET $offset");
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Retrived Successfully',
+                'data' => [
+                    'current_page' => $page,
+                    'total_pages' => ceil(Kimia::count() / $limit),
+                    'total_datas' => Kimia::count(),
+                    'limit' => $limit,
+                    'data' => $exist
+                ]
+            ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,

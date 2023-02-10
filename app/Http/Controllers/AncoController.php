@@ -60,12 +60,6 @@ class AncoController extends Controller
     {
         try {
             $exist = Anco::all();
-            if (!$exist) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Anco Not Found'
-                ], 404);
-            }
             return response()->json([
                 'status' => true,
                 'message' => 'Data retrived successfully',

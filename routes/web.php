@@ -15,7 +15,15 @@
 */
 
 $router->get('/', function () use ($router) {
-    return $router->app->version();
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Welcome to API Sistem Monitoring Air Kolam Budidaya Udang',
+        'data' => [
+            'author' => 'Muhammad Umar Mansyur',
+            'email' => 'umar.ovie@gmail.com',	
+            'github' => 'github.com/UmarMansyur',
+        ]
+    ]);
 });
 $router->group(['prefix' => 'api'], function($router) {
     $router->post('login', 'AuthController@login');
@@ -25,6 +33,7 @@ $router->group(['prefix' => 'api'], function($router) {
    
     $router->group(['prefix' => 'user'], function($router) {
         $router->get('/', 'UserController@show');
+        $router->get('show/{id}', 'UserController@showById');
         $router->post('create', 'UserController@create');
         $router->put('update/{id}', 'UserController@update');
         $router->delete('delete/{id}', 'UserController@destroy');
@@ -45,6 +54,7 @@ $router->group(['prefix' => 'api'], function($router) {
     });
     $router->group(['prefix' => 'anco'], function($router) {
         $router->get('/', 'DetailAncoController@show');
+        $router->get('show/today', 'DetailAncoController@showToday');
         $router->get('show/{id}', 'DetailAncoController@showById');
         $router->post('create', 'DetailAncoController@create');
         $router->put('update/{id}', 'DetailAncoController@update');
@@ -52,24 +62,27 @@ $router->group(['prefix' => 'api'], function($router) {
     });
     $router->group(['prefix' => 'kimia'], function ($router) {
         $router->get('/', 'KimiaController@show');
+        $router->get('show/today', 'KimiaController@showToday');
         $router->get('show/{id}', 'KimiaController@showById');
         $router->post('create', 'KimiaController@create');
         $router->put('update/{id}', 'KimiaController@update');
         $router->delete('delete/{id}', 'KimiaController@destroy');
     });
     $router->group(['prefix' => 'pakan'], function ($router) {
-        $router->get('/', 'PakanController@show');
-        $router->get('show/{id}', 'PakanController@showById');
-        $router->post('create', 'PakanController@create');
-        $router->put('update/{id}', 'PakanController@update');
-        $router->delete('delete/{id}', 'PakanController@destroy');
+        $router->get('/', 'FeedController@show');
+        $router->get('show/today', 'FeedController@showToday');
+        $router->get('show/{id}', 'FeedController@showById');
+        $router->post('create', 'FeedController@create');
+        $router->put('update/{id}', 'FeedController@update');
+        $router->delete('delete/{id}', 'FeedController@destroy');
     });
     $router->group(['prefix' => 'air'], function ($router) {
-        $router->get('/', 'AirController@show');
-        $router->get('show/{id}', 'AirController@showById');
-        $router->post('create', 'AirController@create');
-        $router->put('update/{id}', 'AirController@update');
-        $router->delete('delete/{id}', 'AirController@destroy');
+        $router->get('/', 'WaterController@show');
+        $router->get('show/today', 'WaterController@showToday');
+        $router->get('show/{id}', 'WaterController@showById');
+        $router->post('create', 'WaterController@create');
+        $router->put('update/{id}', 'WaterController@update');
+        $router->delete('delete/{id}', 'WaterController@destroy');
     });
 
 });

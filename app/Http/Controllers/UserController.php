@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\UserDetail;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -59,7 +60,10 @@ class UserController extends Controller
     public function show()
     {
         try {
-            $users = User::all();
+            $limit = request('limit') ?? 10;
+            $page = request('page') ?? 1;
+            $offset = ($page - 1) / $limit;
+            $users = DB::select("SELECT users.*, user_details.id as user_detail_id, address, phone FROM users JOIN user_details ON users.id = user_details.user_id LIMIT $limit OFFSET $offset");
             if ($users) {
                 return response()->json([
                     'status' => true,
@@ -67,9 +71,16 @@ class UserController extends Controller
                 ]);
             }
             return response()->json([
-                'status' => false,
-                'message' => 'No users found'
-            ], 200);
+                'status' => true,
+                'message' => 'Data Retrived Successfully',
+                'data' => [
+                    'current_page' => $page,
+                    'total_pages' => ceil(User::count() / $limit),
+                    'total_datas' => User::count(),
+                    'limit' => $limit,
+                    'data' => $users
+                ]
+            ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
@@ -80,7 +91,7 @@ class UserController extends Controller
 
     public function showById($id) {
         try {
-            $exist = User::find($id);
+            $exist = DB::select('SELECT users.*, user_details.id as user_detail_id, address, phone FROM users JOIN user_details ON users.id = user_details.user_id WHERE users.id = ?', [$id]);
             if (!$exist) {
                 return response()->json([
                     'status' => false,
@@ -99,11 +110,11 @@ class UserController extends Controller
             ], 500);
         }
     }
-
     public function update(Request $request, $id)
     {
         try {
             $user = User::find($id);
+            $userDetail = UserDetail::where('user_id', $id)->first();
             if (!$user) {
                 return response()->json([
                     'status' => false,
@@ -117,8 +128,14 @@ class UserController extends Controller
                 'role' => $request->role,
                 'thumbnail' => $request->thumbnail
             ];
+            $newDataUser = [
+                'address' => $request->address,
+                'phone' => $request->phone
+            ];
             $user->fill($newData);
+            $userDetail->fill($newDataUser);
             $user->save();
+            $userDetail->save();
             return response()->json([
                 'status' => true,
                 'message' => 'User updated successfully'

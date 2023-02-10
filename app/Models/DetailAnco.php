@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class DetailAnco extends Model {
-    protected $table = 'anco_types';
+    protected $table = 'ancos';
     protected $fillable = [
         'pond_id',
         'anco_type_id',	
